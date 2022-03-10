@@ -1,0 +1,22 @@
+Sample Input: (Hight Width)
+                5 2
+                6 3
+                4 1
+                4 2
+                1 3
+
+    Sample Output: (Area)
+                10
+                18
+                4
+                8
+                3
+
+                Sort Via Area (Hight * Width = Area)
+                1 * 3 = 3
+                4 * 1 = 4
+                4 * 2 = 8
+                5 * 2 = 10
+                6 * 3 = 18
+				
+Write a Code for the Following Output Using Structure.
