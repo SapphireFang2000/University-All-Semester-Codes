@@ -1,0 +1,82 @@
+<html>
+<title>20200104125_Assignment01</title>
+<canvas id="webglcanvas" width="500" height="500"></canvas>
+
+<script>
+    var canvas = document.getElementById("webglcanvas"); 
+    var gl = canvas.getContext("webgl");
+
+    // Vertex shader code
+    var vertexShaderSource = `
+        attribute vec3 a_coords;
+        void main() {
+            gl_Position = vec4(a_coords, 1.0);
+        }`;
+
+    // Fragment shader code for yellow color
+    var fragmentShaderSource = `
+        void main() {
+            gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);  // Yellow
+        }`;
+
+    // Create and compile shaders
+    var vsh = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vsh, vertexShaderSource);
+    gl.compileShader(vsh);
+
+    var fsh = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fsh, fragmentShaderSource);
+    gl.compileShader(fsh);
+
+    // Create program and link shaders
+    var prog = gl.createProgram();
+    gl.attachShader(prog, vsh);
+    gl.attachShader(prog, fsh);
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+
+    // Define vertex coordinates for triangles to form a pentagon
+    var coords = new Float32Array([
+        // Triangle 1
+        0.0, 0.0, 0.0,   // Center
+        0.0, 0.5, 0.0,    // Top vertex
+        -0.475, 0.155, 0.0, // Lower left vertex
+
+        // Triangle 2
+        0.0, 0.0, 0.0,   // Center
+        -0.475, 0.155, 0.0, // Lower left vertex
+        -0.295, -0.405, 0.0, // Bottom left vertex
+
+        // Triangle 3
+        0.0, 0.0, 0.0,   // Center
+        -0.295, -0.405, 0.0, // Bottom left vertex
+        0.295, -0.405, 0.0, // Bottom right vertex
+
+        // Triangle 4
+        0.0, 0.0, 0.0,   // Center
+        0.295, -0.405, 0.0, // Bottom right vertex
+        0.475, 0.155, 0.0,  // Lower right vertex
+
+        // Triangle 5
+        0.0, 0.0, 0.0,   // Center
+        0.475, 0.155, 0.0,  // Lower right vertex
+        0.0, 0.5, 0.0     // Top vertex
+    ]);
+
+    var a_coords_location = gl.getAttribLocation(prog, "a_coords");
+
+    var a_coords_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, a_coords_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, coords, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(a_coords_location, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(a_coords_location);
+
+    // Set background color to a darker navy blue and clear
+    gl.clearColor(0.0, 0.0, 0.3, 1.0);  // Darker Navy Blue
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // Draw the pentagon using triangles
+    gl.drawArrays(gl.TRIANGLES, 0, 15); // 5 triangles, 3 vertices each
+</script>
+
+</html>
