@@ -1,0 +1,1 @@
+[float] [id 1] [=] [3.125] [;] [double] [id 2] [(] [int] [id 3] [)] [{] [double] [id 4] [;] [id 4] [=] [0.01] [;] [return] [id 4] [;] [}] [int] [id 5] [;] [int] [id 6] [(] [void] [)] [{] [int] [id 7] [;] [double] [id 8] [;] [id 7] [=] [25] [;] [id 8] [=] [id 2] [(] [id 7] [)] [;]
