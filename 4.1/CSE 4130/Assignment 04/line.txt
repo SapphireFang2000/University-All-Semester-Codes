@@ -1,0 +1,15 @@
+1 
+2 float x1 = 3.125;;;
+3 
+4 double f1(float a, int int x)
+5 {if(x<x1)
+6 double z;;
+7 else z = 0.01;}}
+8 else return z;
+9 }
+10 
+11 int main(void)
+12 {{{{
+13 int n1; double z;
+14 n1=25; z=f1(n1);}
+15 
