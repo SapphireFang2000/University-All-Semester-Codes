@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>20200104125_PartB</title>
+</head>
+<body>
+    <canvas id="webglcanvas" width="700" height="700"></canvas>
+    <script>
+        var canvas = document.getElementById("webglcanvas");
+        var gl = canvas.getContext("webgl");
+
+        var vertexShaderSource = `
+        attribute vec3 a_coords;
+        attribute vec3 a_colors;
+        uniform float u_light;
+        varying vec3 v_color;
+
+        void main() {
+            vec3 modifiedColor = a_colors;
+            if (a_coords.y < -0.5) {
+                modifiedColor.b = a_colors.b * (1.0 + u_light);
+            }
+            gl_Position = vec4(a_coords.x, a_coords.y, a_coords.z, 1.0);
+            v_color = modifiedColor;
+        }`;
+
+        var fragmentShaderSource = `
+        precision mediump float;
+        varying vec3 v_color;
+        void main() {
+            gl_FragColor = vec4(v_color, 1.0);
+        }`;
+
+        var vsh = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vsh, vertexShaderSource);
+        gl.compileShader(vsh);
+        var fsh = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fsh, fragmentShaderSource);
+        gl.compileShader(fsh);
+        var prog = gl.createProgram();
+        gl.attachShader(prog, vsh);
+        gl.attachShader(prog, fsh);
+        gl.linkProgram(prog);
+        gl.useProgram(prog);
+
+        
+        var verticesAndColors = [
+            
+            -1.0, -1.0, 0.0,  1.0, 1.0, 0.5,
+             1.0, -1.0, 0.0,  1.0, 1.0, 0.5,
+             0.0, 0.3, 0.0,  1.0, 1.0, 0.5,
+
+            -0.35, -0.4, 0.0,  1.0, 0.0, 0.0,
+            -0.15, -0.4, 0.0,  0.0, 0.5, 0.0,
+            -0.25, -0.2, 0.0,  1.0, 0.0, 0.3,
+            -0.35, -0.4, 0.0,  0.2, 0.0, 0.0,
+            -0.15, -0.4, 0.0,  1.0, 0.0, 0.6,
+            -0.25, -0.6, 0.0,  1.0, 0.8, 0.0,
+
+             0.15, -0.4, 0.0,  0.0, 0.0, 1.0,
+             0.35, -0.4, 0.0,  0.5, 0.0, 0.5,
+             0.25, -0.2, 0.0,  0.0, 1.0, 1.0,
+             0.15, -0.4, 0.0,  0.0, 0.0, 1.0,
+             0.35, -0.4, 0.0,  0.5, 0.0, 0.5,
+             0.25, -0.6, 0.0,  0.0, 1.0, 1.0,
+           
+            -0.1, -0.7, 0.0,  0.0, 1.0, 0.8,
+             0.1, -0.7, 0.0,  0.0, 0.0, 0.5,
+             0.0, -0.5, 0.0,  0.0, 0.7, 0.0,
+            -0.1, -0.7, 0.0,  0.0, 0.0, 0.9,
+             0.1, -0.7, 0.0,  0.0, 0.4, 0.0,
+             0.0, -0.9, 0.0,  0.2, 0.0, 0.0,
+            
+            -0.6, -0.7, 0.0,  0.0, 1.0, 0.0,
+            -0.4, -0.7, 0.0,  0.0, 1.0, 0.0,
+            -0.5, -0.5, 0.0,  1.0, 0.0, 0.0,
+            -0.6, -0.7, 0.0,  1.0, 1.0, 0.0,
+            -0.4, -0.7, 0.0,  0.0, 1.0, 0.0,
+            -0.5, -0.9, 0.0,  1.0, 0.0, 0.0,
+            
+             0.4, -0.7, 0.0,  0.0, 0.5, 0.0,
+             0.6, -0.7, 0.0,  0.5, 0.0, 0.5,
+             0.5, -0.5, 0.0,  0.7, 1.0, 0.0,
+             0.4, -0.7, 0.0,  0.0, 0.5, 1.0,
+             0.6, -0.7, 0.0,  0.5, 0.8, 0.5,
+             0.5, -0.9, 0.0,  0.0, 1.0, 0.0,
+
+            -0.3, 0.2, 0.0,  0.0, 0.0, 0.0,
+             0.3, 0.2, 0.0,  0.0, 0.0, 0.0,
+             0.0, 0.6, 0.0,  0.0, 0.0, 0.0,
+
+            -0.25, 0.26, 0.0, 1.0, 0.0, 0.0,
+             0.0, 0.6, 0.0,  1.0, 0.0, 0.0,
+            -0.25, 1.0, 0.0,  1.0, 0.0, 0.0,
+           
+            0.25, 0.26, 0.0,  1.0, 0.0, 0.0,
+            0.0, 0.6, 0.0,  1.0, 0.0, 0.0,
+            0.25, 1.0, 0.0, 1.0, 0.0, 0.0,
+
+            -0.25, 1.0, 0.0,  1.0, 0.0, 0.0,
+            0.0, 0.6, 0.0,  1.0, 0.0, 0.0,
+            0.25, 1.0, 0.0,  1.0, 0.0, 0.0,
+
+            -0.05, 0.8, 0.0,  0.5, 0.0, 0.5,
+             0.05, 0.8, 0.0,  0.5, 0.0, 0.5,
+             0.0, 0.7, 0.0,  0.2, 0.4, 0.0,
+            -0.05, 0.8, 0.0,  0.2, 0.0, 0.0,
+             0.05, 0.8, 0.0,  0.5, 0.0, 0.5,
+             0.0, 0.9, 0.0,  0.5, 0.0, 0.5,
+             
+        ];
+        var buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesAndColors.flat()), gl.STATIC_DRAW);
+        var a_coords_loc = gl.getAttribLocation(prog, "a_coords");
+        gl.vertexAttribPointer(a_coords_loc, 3, gl.FLOAT, false, 24, 0);
+        gl.enableVertexAttribArray(a_coords_loc);
+        var a_colors_loc = gl.getAttribLocation(prog, "a_colors");
+        gl.vertexAttribPointer(a_colors_loc, 3, gl.FLOAT, false, 24, 12);
+        gl.enableVertexAttribArray(a_colors_loc);
+
+        var u_light_loc = gl.getUniformLocation(prog, "u_light");
+        var light = 1.0;
+        gl.uniform1f(u_light_loc, light);
+
+        function render() {
+            gl.clearColor(0.5, 0.8, 1.0, 1.0); 
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.drawArrays(gl.TRIANGLES, 0, verticesAndColors.length / 6);
+        }
+        render();
+
+        window.onkeydown = function(event) {
+            if (event.key === 'w' || event.key === 'W') {
+                light = (light + 0.1) % 1.0;
+                gl.uniform1f(u_light_loc, light);
+                render();
+            }
+        };
+    </script>
+</body>
+</html>

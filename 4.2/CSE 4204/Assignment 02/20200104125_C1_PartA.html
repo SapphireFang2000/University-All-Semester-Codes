@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>20200104125_PartA</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="c" width="800" height="800"></canvas>
+
+  <script>
+    const c = document.getElementById('c');
+    const gl = c.getContext('webgl');
+
+    const vs = `
+      attribute vec2 a_position;
+
+      void main() {
+        gl_Position = vec4(a_position, 0.0, 1.0);
+      }`;
+
+    const fs = `
+      precision mediump float;
+      uniform vec3 u_color;
+
+      void main() {
+        gl_FragColor = vec4(u_color, 1.0);
+      }`;
+
+    const vsd = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vsd, vs);
+    gl.compileShader(vsd);
+
+    const fsd = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fsd, fs);
+    gl.compileShader(fsd);
+
+    const program = gl.createProgram();
+    gl.attachShader(program, vsd);
+    gl.attachShader(program, fsd);
+    gl.linkProgram(program);
+    gl.useProgram(program);
+
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    const positionAttrib = gl.getAttribLocation(program, 'a_position');
+    gl.vertexAttribPointer(positionAttrib, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(positionAttrib);
+
+    const colorLocation = gl.getUniformLocation(program, 'u_color');
+	
+    let circles = [{ x: 0, y: 0, radius: 0.05, color: [Math.random(), Math.random(), Math.random()] }];
+    let clickCount = 0;
+	
+	
+	function generateCircleVertices(x, y, radius, numSegments) {
+	  const vertices = [];
+	  const colors = [];
+
+	  for (let i = 0; i <= numSegments; i++) {
+		const angle = (i / numSegments) * 2 * Math.PI;
+		const vx = x + radius * Math.cos(angle);
+		const vy = y + radius * Math.sin(angle);
+		vertices.push(vx, vy);
+	  }
+
+	  return vertices;
+	}
+
+	function render() {
+	  gl.clearColor(1.0, 1.0, 1.0, 1.0);
+	  gl.clear(gl.COLOR_BUFFER_BIT);
+
+	  circles.forEach(circle => {
+		const vertices = generateCircleVertices(circle.x, circle.y, circle.radius, 100);
+
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+		gl.vertexAttribPointer(positionAttrib, 2, gl.FLOAT, false, 0, 0);
+		const color = circle.color;
+		gl.uniform3fv(colorLocation, color);
+		
+		gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length / 2);
+	  });
+	}
+
+    function handleClick(e) {
+      const offsets = [
+        { x: 0.1, y: 0 },
+        { x: 0, y: 0.1 },
+        { x: -0.1, y: 0 },
+        { x: 0, y: -0.1 },
+        { x: 0.1, y: 0.1 },
+        { x: -0.1, y: -0.1 },
+        { x: -0.1, y: 0.1 },
+        { x: 0.1, y: -0.1 }
+      ];
+
+      for (const offset of offsets) {
+		const newColor = [Math.random(), Math.random(), Math.random()];
+        const newX = offset.x + (offset.x === 0 ? 0 : (offset.x <= 0 ? -clickCount * 0.1 : +clickCount * 0.1));
+        const newY = offset.y + (offset.y === 0 ? 0 : (offset.y <= 0 ? -clickCount * 0.1 : +clickCount * 0.1));
+        circles.push({ x: newX, y: newY, radius: 0.05, color: newColor });
+      }
+
+      clickCount++;
+      render();
+    }
+
+    c.addEventListener('click', handleClick);
+
+    render();
+
+	
+  </script>
+</body>
+</html>
